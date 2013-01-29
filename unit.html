@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>test</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/reset.css">
+		<link rel="stylesheet" type="text/css" href="css/flipper.css">
+	</head>
+	<body>
+		<div class="container">
+			<div class="unit">
+				<div class="inner-box">
+					<div class="heading">
+						<h1>Heading</h1>
+						<p class="subtitle">Subtitle</p>
+					</div>
+					<p class="content">
+						lorem ipsum dolor sit amet, consectetur adipiscing elit. mauris eu dolor non diam placerat placerat ac id nisi. mauris a pellentesque ligula. aenean vestibulum mauris ac nisi lacinia ut pretium magna suscipit. sed eleifend fermentum enim in facilisis. pellentesque id convallis dui. ut erat orci, cursus venenatis lobortis at, posuere.
+					</p>
+				</div>
+			</div>
+
+		</div>
+		
+		<div class="usage-description">
+			Scroll your mousewheel or drag the page horizontally to switch between the pages.
+		</div>
+
+		<script type="text/javascript">
+			$(document).ready(function()
+			{
+				var $current_unit 	=  $('.unit:last-child'),
+					is_dragging 	= false,
+					drag_start_point,
+					drag_end_point;
+
+				// The following is for testing.
+				for(var i=0;i<10;i++)
+					$('.container').append($current_unit.clone());
+				$current_unit =  $('.unit:last-child');
+
+				// testing end.
+
+				$(window).on('mousewheel', function(e)
+				{
+					// console.log(e.originalEvent.wheelDeltaY);
+					var deltaY = e.originalEvent.wheelDeltaY;
+					if(deltaY<0)
+						flipToNext();
+					else
+						flipToPrev();
+				});
+
+				function flipToNext()
+				{
+					if($current_unit.prev().length === 0) return;
+					$current_unit.addClass('flipped');
+					$current_unit = $current_unit.prev();
+				}
+
+				function flipToPrev()
+				{
+					if($current_unit.next().length === 0) return;
+					$current_unit = $current_unit.next().removeClass('flipped');
+				}
+
+				// Detect dragging
+				$(document).on('mousedown', function(e)
+				{
+					console.log('mousedown');
+					drag_start_point = { x: e.pageX, y: e.pageY };
+					$(window).on('mousemove', function()
+					{
+						is_dragging = true;
+						$(this).unbind('mousemove');
+					})
+				}).on('mouseup', function(e)
+				{
+					if(is_dragging)
+					{
+						is_dragging = false;
+						drag_end_point = { x: e.pageX, y: e.pageY };
+						if(drag_end_point.x < drag_start_point.x)
+							flipToPrev();
+						else
+							flipToNext();
+					}
+				});
+			});
+		</script>
+	</body>
+</html>
